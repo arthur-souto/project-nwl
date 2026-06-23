@@ -6,7 +6,17 @@ export const GOOGLE_AUTH_URL =
 export const AUTH_EXCHANGE_URL =
   import.meta.env.VITE_AUTH_EXCHANGE_URL ?? `${API_URL}/v1/api/auth/exchange`
 
+export const AUTH_ME_URL = import.meta.env.VITE_AUTH_ME_URL ?? `${API_URL}/v1/api/auth/me`
+
 export interface ExchangeResponse {
   accessToken: string
   refreshToken: string
+}
+
+export interface CurrentUser {
+  id: string
+  googleId: string
+  email: string
+  username: string
+  profileImage: string
 }

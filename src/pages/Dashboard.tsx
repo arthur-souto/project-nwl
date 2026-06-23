@@ -1,38 +1,33 @@
-import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { styles } from '../styles/shared'
+import { Navbar } from '../components/ui/Navbar'
+import { PageLayout } from '../components/ui/PageLayout'
+import { useAuth } from '../contexts/useAuth'
+import { useLogout } from '../hooks/useLogout'
+import { useRequireAuth } from '../hooks/useRequireAuth'
+
+const navLinks = [
+  { label: 'Painel', to: '/dashboard' },
+  { label: 'Perfil', to: '/profile' },
+]
 
 export default function Dashboard() {
-  const navigate = useNavigate()
-  const [accessToken] = useState(() => localStorage.getItem('accessToken'))
-
-  useEffect(() => {
-    if (!accessToken) {
-      navigate('/', { replace: true })
-    }
-  }, [accessToken, navigate])
-
-  const handleLogout = () => {
-    localStorage.removeItem('accessToken')
-    localStorage.removeItem('refreshToken')
-    navigate('/', { replace: true })
-  }
+  const accessToken = useRequireAuth()
+  const { user } = useAuth()
+  const handleLogout = useLogout()
 
   if (!accessToken) return null
 
   return (
-    <div style={styles.page}>
-      <div style={{ ...styles.card, maxWidth: 480, alignItems: 'stretch' }}>
-        <div style={{ alignSelf: 'center' }}>
-          <span style={styles.badge}>Autenticado com sucesso!</span>
-        </div>
-        <h1 style={{ ...styles.title, textAlign: 'center' }}>Dashboard</h1>
-        <p style={styles.label}>Seu token JWT (accessToken)</p>
-        <textarea style={styles.tokenBox} readOnly value={accessToken} />
-        <button type="button" style={styles.secondaryButton} onClick={handleLogout}>
-          Sair
-        </button>
-      </div>
+    <div className="min-h-svh bg-surface">
+      <Navbar links={navLinks} user={user} onLogout={handleLogout} />
+
+      <PageLayout>
+        <section>
+          <h1 className="text-3xl font-extrabold tracking-tight text-text sm:text-4xl">
+            Bem-vindo ao painel de ativos
+          </h1>
+          <p className="mt-2 text-text-muted">Acompanhe lotes, validades e alertas dos seus ativos farmacêuticos.</p>
+        </section>
+      </PageLayout>
     </div>
   )
 }

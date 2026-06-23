@@ -1,12 +1,17 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import axios from 'axios'
-import { AUTH_EXCHANGE_URL, type ExchangeResponse } from '../api/client'
-import { styles } from '../styles/shared'
+import { Badge } from '../components/ui/Badge'
+import { Card } from '../components/ui/Card'
+import { Spinner } from '../components/ui/Spinner'
+import { useAuth } from '../contexts/useAuth'
+import { exchangeAuthCode } from '../services/authService'
+import { setTokens } from '../services/tokenService'
 
 export default function AuthCallback() {
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
+  const { loadCurrentUser } = useAuth()
   const code = searchParams.get('code')
   const oauthError = searchParams.get('error')
 
@@ -16,52 +21,45 @@ export default function AuthCallback() {
     return null
   })
 
+  const hasExchangedRef = useRef(false)
+
   useEffect(() => {
     if (error || !code) return
+    if (hasExchangedRef.current) return
+    hasExchangedRef.current = true
 
-    let cancelled = false
-
-    axios
-      .post<ExchangeResponse>(AUTH_EXCHANGE_URL, { code })
-      .then(({ data }) => {
-        if (cancelled) return
-        localStorage.setItem('accessToken', data.accessToken)
-        localStorage.setItem('refreshToken', data.refreshToken)
+    exchangeAuthCode(code)
+      .then(async (data) => {
+        setTokens(data)
+        await loadCurrentUser()
         navigate('/dashboard', { replace: true })
       })
       .catch((err) => {
-        if (cancelled) return
         const message = axios.isAxiosError(err)
           ? (err.response?.data as { message?: string } | undefined)?.message
           : undefined
         setError(message ?? 'Não foi possível concluir a autenticação. Tente novamente.')
       })
-
-    return () => {
-      cancelled = true
-    }
-  }, [code, error, navigate])
-
-  if (error) {
-    return (
-      <div style={styles.page}>
-        <div style={styles.card}>
-          <span style={styles.errorBadge}>Falha na autenticação</span>
-          <p style={styles.subtitle}>{error}</p>
-          <Link to="/" style={styles.link}>
-            Voltar para o login
-          </Link>
-        </div>
-      </div>
-    )
-  }
+  }, [code, error, navigate, loadCurrentUser])
 
   return (
-    <div style={styles.page}>
-      <div style={styles.card}>
-        <div style={styles.spinner} />
-        <p style={styles.subtitle}>Autenticando...</p>
-      </div>
-    </div>
+    <main className="flex min-h-svh items-center justify-center bg-background px-6">
+      <Card variant="elevated" className="w-full max-w-sm text-center">
+        {error ? (
+          <div className="flex flex-col items-center gap-4">
+            <Badge variant="error">Falha na autenticação</Badge>
+            <p className="text-sm text-text-muted">{error}</p>
+            <Link to="/" className="text-sm font-semibold text-primary-dark hover:underline">
+              Voltar para o login
+            </Link>
+          </div>
+        ) : (
+          <div className="flex flex-col items-center gap-4 py-4">
+            <Spinner size="lg" aria-label="Autenticando" />
+            <p className="text-sm font-medium text-text-muted">Autenticando sua conta...</p>
+          </div>
+        )}
+      </Card>
+    </main>
   )
 }
