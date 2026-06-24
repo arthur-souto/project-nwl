@@ -8,6 +8,15 @@ export const AUTH_EXCHANGE_URL =
 
 export const AUTH_ME_URL = import.meta.env.VITE_AUTH_ME_URL ?? `${API_URL}/v1/api/auth/me`
 
+export const ACTIVATE_ACCOUNT_URL =
+  import.meta.env.VITE_ACTIVATE_ACCOUNT_URL ?? `${API_URL}/v1/api/auth/active`
+
+export const ASSETS_SEARCH_URL =
+  import.meta.env.VITE_ASSETS_SEARCH_URL ?? `${API_URL}/v1/api/assets/search`
+
+export const AUTH_REFRESH_URL =
+  import.meta.env.VITE_AUTH_REFRESH_URL ?? `${API_URL}/v1/api/auth/refresh`
+
 export interface ExchangeResponse {
   accessToken: string
   refreshToken: string
@@ -19,4 +28,31 @@ export interface CurrentUser {
   email: string
   username: string
   profileImage: string
+  isVerified: boolean
+}
+
+export interface Asset {
+  id: string
+  code: string
+  name: string
+  supplier: string | null
+  unit: string
+  createdAt: string
+  updatedAt: string
+}
+
+export interface PageableParams {
+  page: number
+  size: number
+  sort?: string[]
+}
+
+export interface Page<T> {
+  content: T[]
+  page: {
+    size: number
+    number: number
+    totalElements: number
+    totalPages: number
+  }
 }

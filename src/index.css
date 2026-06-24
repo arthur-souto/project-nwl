@@ -21,3 +21,18 @@ body {
 #root {
   min-height: 100svh;
 }
+
+@keyframes toast-in {
+  from {
+    transform: translateX(1rem);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.animate-toast-in {
+  animation: toast-in 0.2s ease-out;
+}

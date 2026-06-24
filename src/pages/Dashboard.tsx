@@ -1,33 +1,49 @@
-import { Navbar } from '../components/ui/Navbar'
-import { PageLayout } from '../components/ui/PageLayout'
+import { AlertTriangle, Clock, Package } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { AppLayout } from '../components/layout/AppLayout'
+import { MetricCard } from '../components/ui/MetricCard'
 import { useAuth } from '../contexts/useAuth'
-import { useLogout } from '../hooks/useLogout'
-import { useRequireAuth } from '../hooks/useRequireAuth'
+import { searchAssets } from '../services/assetService'
 
-const navLinks = [
-  { label: 'Painel', to: '/dashboard' },
-  { label: 'Perfil', to: '/profile' },
-]
+function getGreeting(): string {
+  const hour = new Date().getHours()
+  if (hour < 12) return 'Bom dia'
+  if (hour < 18) return 'Boa tarde'
+  return 'Boa noite'
+}
 
 export default function Dashboard() {
-  const accessToken = useRequireAuth()
   const { user } = useAuth()
-  const handleLogout = useLogout()
+  const [totalAssets, setTotalAssets] = useState<number | null>(null)
 
-  if (!accessToken) return null
+  useEffect(() => {
+    let cancelled = false
+
+    searchAssets('', { page: 0, size: 1 }).then((result) => {
+      if (cancelled) return
+      setTotalAssets(result.page.totalElements)
+    })
+
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
   return (
-    <div className="min-h-svh bg-surface">
-      <Navbar links={navLinks} user={user} onLogout={handleLogout} />
+    <AppLayout title="Início">
+      <section>
+        <h1 className="text-lg font-semibold text-text">
+          {getGreeting()}
+          {user ? `, ${user.username}` : ''}
+        </h1>
+        <p className="mt-1 text-[13px] text-text-muted">Aqui está o resumo dos seus ativos.</p>
+      </section>
 
-      <PageLayout>
-        <section>
-          <h1 className="text-3xl font-extrabold tracking-tight text-text sm:text-4xl">
-            Bem-vindo ao painel de ativos
-          </h1>
-          <p className="mt-2 text-text-muted">Acompanhe lotes, validades e alertas dos seus ativos farmacêuticos.</p>
-        </section>
-      </PageLayout>
-    </div>
+      <section className="mt-6 grid gap-3 sm:grid-cols-3">
+        <MetricCard label="Total de ativos" value={totalAssets ?? '—'} icon={Package} />
+        <MetricCard label="Validades próximas" value={12} icon={Clock} valueClassName="text-warning" />
+        <MetricCard label="Alertas ativos" value={3} icon={AlertTriangle} valueClassName="text-error" />
+      </section>
+    </AppLayout>
   )
 }

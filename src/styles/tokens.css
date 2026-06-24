@@ -1,15 +1,15 @@
 :root {
   /* Brand */
-  --color-primary: #22c55e;
+  --color-primary: #16a34a;
   --color-primary-dark: #15803d;
-  --color-primary-light: #dcfce7;
+  --color-primary-light: #f0faf0;
 
   /* Neutrals */
-  --color-background: #ffffff;
-  --color-surface: #f8faf9;
-  --color-text: #0f172a;
-  --color-text-muted: #64748b;
-  --color-border: #e2e8f0;
+  --color-background: #f8f9f8;
+  --color-surface: #ffffff;
+  --color-text: #1a2e1a;
+  --color-text-muted: #6b7280;
+  --color-border: #e5e7eb;
 
   /* Status */
   --color-success: #15803d;
@@ -21,16 +21,16 @@
   --color-info: #1d4ed8;
   --color-info-light: #dbeafe;
 
-  /* Radius */
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 16px;
+  /* Radius — capped low on purpose: never exceed --radius-md (6px) for decorative corners */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 6px;
   --radius-full: 9999px;
 
-  /* Shadow */
-  --shadow-sm: 0 1px 2px 0 rgba(15, 23, 42, 0.06);
-  --shadow-md: 0 8px 24px -4px rgba(15, 23, 42, 0.1), 0 2px 6px -2px rgba(15, 23, 42, 0.05);
-  --shadow-lg: 0 24px 48px -12px rgba(15, 23, 42, 0.18), 0 4px 12px -4px rgba(15, 23, 42, 0.08);
+  /* Shadow — subtle, almost imperceptible */
+  --shadow-sm: 0 1px 2px 0 rgba(15, 23, 42, 0.04);
+  --shadow-md: 0 2px 4px -1px rgba(15, 23, 42, 0.06);
+  --shadow-lg: 0 4px 8px -2px rgba(15, 23, 42, 0.08);
 
   /* Typography */
   --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;

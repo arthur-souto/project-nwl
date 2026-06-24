@@ -10,14 +10,14 @@ export interface CardProps extends HTMLAttributes<HTMLDivElement> {
 }
 
 const variantClasses: Record<CardVariant, string> = {
-  default: 'shadow-sm',
-  elevated: 'shadow-lg',
+  default: '',
+  elevated: 'shadow-sm',
 }
 
 export function Card({ variant = 'default', padded = true, className, children, ...props }: CardProps) {
   return (
     <div
-      className={cn('rounded-lg border border-border bg-white', variantClasses[variant], padded && 'p-6', className)}
+      className={cn('rounded-md border border-border bg-white', variantClasses[variant], padded && 'p-6', className)}
       {...props}
     >
       {children}

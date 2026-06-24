@@ -1,7 +1,7 @@
 import { GOOGLE_AUTH_URL } from '../api/client'
 import { Button } from '../components/ui/Button'
 import { Card } from '../components/ui/Card'
-import { LogoMark } from '../components/ui/Navbar'
+import { LogoMark } from '../components/ui/LogoMark'
 
 function GoogleIcon() {
   return (
