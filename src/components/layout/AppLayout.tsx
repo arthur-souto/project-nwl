@@ -5,7 +5,6 @@ import { VerificationModal } from '../VerificationModal'
 import { useAuth } from '../../contexts/useAuth'
 import { useLogout } from '../../hooks/useLogout'
 import { useRequireAuth } from '../../hooks/useRequireAuth'
-import { getAccessTokenPayload } from '../../services/tokenService'
 import { Sidebar } from './Sidebar'
 import { Topbar } from './Topbar'
 
@@ -16,11 +15,10 @@ export interface AppLayoutProps {
 
 export function AppLayout({ title, children }: AppLayoutProps) {
   const accessToken = useRequireAuth()
-  const { user } = useAuth()
+  const { user, isVerified, markVerified } = useAuth()
   const handleLogout = useLogout()
   const location = useLocation()
 
-  const [isVerified, setIsVerified] = useState(() => getAccessTokenPayload()?.isVerified ?? true)
   const [isVerificationModalOpen, setIsVerificationModalOpen] = useState(!isVerified)
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
@@ -44,7 +42,7 @@ export function AppLayout({ title, children }: AppLayoutProps) {
       <VerificationModal
         open={isVerificationModalOpen}
         onClose={() => setIsVerificationModalOpen(false)}
-        onVerified={() => setIsVerified(true)}
+        onVerified={markVerified}
       />
     </div>
   )

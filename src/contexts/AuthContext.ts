@@ -6,6 +6,8 @@ export interface AuthContextValue {
   isLoadingUser: boolean
   loadCurrentUser: () => Promise<void>
   clearUser: () => void
+  isVerified: boolean
+  markVerified: () => void
 }
 
 export const AuthContext = createContext<AuthContextValue | undefined>(undefined)
