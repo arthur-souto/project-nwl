@@ -394,7 +394,7 @@ export default function Assets() {
                 emptyState={<p className="text-center text-sm text-text-muted">Nenhum ativo encontrado.</p>}
               />
 
-              {!isLoadingAssets && assets.length > 0 && (
+              {!isLoadingAssets && (
                 <Pagination
                   page={page}
                   totalPages={totalPages}
@@ -419,7 +419,7 @@ export default function Assets() {
                 emptyState={<p className="text-center text-sm text-text-muted">Nenhum ativo favoritado ainda.</p>}
               />
 
-              {!isLoadingFavorites && favorites.length > 0 && (
+              {!isLoadingFavorites && (
                 <Pagination
                   page={favoritesPage}
                   totalPages={favoritesTotalPages}

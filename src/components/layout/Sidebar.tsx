@@ -1,4 +1,4 @@
-import { Home, LogOut, Package } from 'lucide-react'
+import { Home, LogOut, Package, User } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { Link, useLocation } from 'react-router-dom'
 import type { CurrentUser } from '../../api/client'
@@ -13,6 +13,7 @@ interface SidebarNavItem {
 const navItems: SidebarNavItem[] = [
   { label: 'Início', to: '/dashboard', icon: Home },
   { label: 'Ativos', to: '/assets', icon: Package },
+  { label: 'Perfil', to: '/profile', icon: User },
 ]
 
 function SidebarContent({ user, onLogout }: { user: CurrentUser | null; onLogout: () => void }) {
