@@ -81,6 +81,10 @@ Sidebar nav only lists routes that actually exist (`Início` → `/dashboard`, `
 
 When the backend returns a field that the OpenAPI/Swagger doc claims is always present but isn't (e.g. `Asset.supplier` can be `null` in practice), trust the runtime behavior over the doc — type it as nullable and render defensively (`'—'` fallback), don't assume the contract is accurate.
 
+**Don't assume every paginated endpoint shares one page shape.** `/v1/api/assets/search` nests pagination under `page: { size, number, totalElements, totalPages }` (type `Page<T>`), while `/v1/api/assets/favorites` returns those same four fields flat at the root (type `FlatPage<T>`, see `client.ts`). Check the actual response shape per-endpoint before reusing a pagination type.
+
+401s reaching a feature's own `.catch()` are not "session expired" — `httpClient`'s interceptor already tried (and gave up on) refreshing the token before the error propagates that far, so a surviving 401 means something else (e.g. an unverified account). `src/lib/httpError.ts`'s `getErrorMessage()` encodes this and is the place to extend if new 401 sub-cases show up.
+
 ## Hooks gotchas (already hit these — don't reintroduce)
 
 - **Don't add a `setState` call that runs synchronously in the body of a `useEffect`.** `eslint-plugin-react-hooks`'s `react-hooks/set-state-in-effect` rule forbids this (it causes a cascading extra render). When you need to reset/derive state in response to something changing (e.g. close a menu when the route changes, debounce a value), either (a) do it in the event handler that caused the change, or (b) use the render-time "adjust state during render" pattern already used in `Sidebar`/`AppLayout`/`Topbar`'s mobile-menu-close logic:

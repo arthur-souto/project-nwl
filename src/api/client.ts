@@ -17,6 +17,9 @@ export const ASSETS_SEARCH_URL =
 export const AUTH_REFRESH_URL =
   import.meta.env.VITE_AUTH_REFRESH_URL ?? `${API_URL}/v1/api/auth/refresh`
 
+export const ASSETS_FAVORITES_URL =
+  import.meta.env.VITE_ASSETS_FAVORITES_URL ?? `${API_URL}/v1/api/assets/favorites`
+
 export interface ExchangeResponse {
   accessToken: string
   refreshToken: string
@@ -55,4 +58,28 @@ export interface Page<T> {
     totalElements: number
     totalPages: number
   }
+}
+
+export interface FavoriteAssetSummary {
+  id: string
+  code: string
+  name: string
+  unit: string
+  createdAt: string
+  updatedAt: string
+}
+
+export interface Favorite {
+  id: string
+  asset: FavoriteAssetSummary
+  createdAt: string
+}
+
+/** Flat pagination shape — distinct from `Page<T>`, which nests size/number/totalElements/totalPages under `page`. */
+export interface FlatPage<T> {
+  content: T[]
+  totalElements: number
+  totalPages: number
+  size: number
+  number: number
 }
