@@ -1,7 +1,8 @@
-import { Download, Eye, Star } from 'lucide-react'
+import { Download, Eye, Pencil, Star } from 'lucide-react'
 import { useCallback, useEffect, useState } from 'react'
 import type { ChangeEvent } from 'react'
 import type { Asset, Favorite } from '../api/client'
+import { AssetDetailModal } from '../components/AssetDetailModal'
 import { AppLayout } from '../components/layout/AppLayout'
 import { Badge } from '../components/ui/Badge'
 import { Button } from '../components/ui/Button'
@@ -9,10 +10,10 @@ import { Card } from '../components/ui/Card'
 import type { DataTableColumn } from '../components/ui/DataTable'
 import { DataTable } from '../components/ui/DataTable'
 import { Input } from '../components/ui/Input'
-import { Modal } from '../components/ui/Modal'
 import { Pagination } from '../components/ui/Pagination'
 import { Select } from '../components/ui/Select'
 import { Spinner } from '../components/ui/Spinner'
+import { useAuth } from '../contexts/useAuth'
 import { useDebouncedValue } from '../hooks/useDebouncedValue'
 import { useToast } from '../hooks/useToast'
 import { listFavorites, searchAssets, toggleFavorite } from '../services/assetService'
@@ -21,6 +22,7 @@ import { getErrorMessage } from '../lib/httpError'
 
 const SEARCH_DEBOUNCE_MS = 300
 const SUPPLIER_MAX_CHARS = 30
+const MANUFACTURER_MAX_CHARS = 30
 const FAVORITES_PAGE_SIZE = 10
 // One-shot, best-effort batch used only to know *which* assets are favorited (for the star
 // icon state on both tables). Favorites beyond this count won't show as favorited on the
@@ -40,8 +42,14 @@ function formatDate(value: string): string {
 }
 
 function exportToCsv(assets: Asset[]) {
-  const header = ['Código', 'Nome', 'Fornecedor', 'Unidade']
-  const rows = assets.map((asset) => [asset.code, asset.name, asset.supplier ?? '', asset.unit])
+  const header = ['Código', 'Nome', 'Fornecedor', 'Fabricante', 'Unidade']
+  const rows = assets.map((asset) => [
+    asset.code,
+    asset.name,
+    asset.supplier ?? '',
+    asset.manufacturer ?? '',
+    asset.unit ?? '',
+  ])
   const csv = [header, ...rows]
     .map((row) => row.map((cell) => `"${cell.replace(/"/g, '""')}"`).join(','))
     .join('\n')
@@ -56,6 +64,7 @@ function exportToCsv(assets: Asset[]) {
 }
 
 export default function Assets() {
+  const { isAdmin } = useAuth()
   const { showError } = useToast()
   const [view, setView] = useState<AssetsView>('all')
 
@@ -91,8 +100,8 @@ export default function Assets() {
       .then((result) => {
         if (cancelled) return
         setAssets(result.content)
-        setTotalPages(result.page.totalPages)
-        setTotalElements(result.page.totalElements)
+        setTotalPages(result.totalPages)
+        setTotalElements(result.totalElements)
         setAssetsError(null)
       })
       .catch((err) => {
@@ -263,9 +272,18 @@ export default function Assets() {
       ),
     },
     {
+      key: 'manufacturer',
+      header: 'Fabricante',
+      render: (asset) => (
+        <span className="text-xs text-text-muted" title={asset.manufacturer ?? undefined}>
+          {truncate(asset.manufacturer, MANUFACTURER_MAX_CHARS)}
+        </span>
+      ),
+    },
+    {
       key: 'unit',
       header: 'Unidade',
-      render: (asset) => <Badge variant="outline">{asset.unit}</Badge>,
+      render: (asset) => <Badge variant="outline">{asset.unit ?? '—'}</Badge>,
     },
     {
       key: 'actions',
@@ -277,10 +295,10 @@ export default function Assets() {
           <button
             type="button"
             onClick={() => setSelectedAsset(asset)}
-            aria-label={`Ver detalhes de ${asset.name}`}
+            aria-label={isAdmin ? `Editar ${asset.name}` : `Ver detalhes de ${asset.name}`}
             className="flex h-6 w-6 items-center justify-center rounded text-text-muted transition-colors hover:bg-background hover:text-text"
           >
-            <Eye size={16} strokeWidth={1.5} />
+            {isAdmin ? <Pencil size={16} strokeWidth={1.5} /> : <Eye size={16} strokeWidth={1.5} />}
           </button>
         </div>
       ),
@@ -301,7 +319,7 @@ export default function Assets() {
     {
       key: 'unit',
       header: 'Unidade',
-      render: (favorite) => <Badge variant="outline">{favorite.asset.unit}</Badge>,
+      render: (favorite) => <Badge variant="outline">{favorite.asset.unit ?? '—'}</Badge>,
     },
     {
       key: 'favoritedAt',
@@ -366,7 +384,7 @@ export default function Assets() {
       {view === 'all' && (
         <div className="mt-4 flex flex-wrap items-end justify-between gap-3">
           <Input
-            placeholder="Buscar por nome, código ou fornecedor"
+            placeholder="Buscar por nome, fornecedor, fabricante, categoria ou indicação"
             value={searchTerm}
             onChange={handleSearchChange}
             className="max-w-sm flex-1"
@@ -432,37 +450,15 @@ export default function Assets() {
         </Card>
       )}
 
-      <Modal
-        open={selectedAsset !== null}
+      <AssetDetailModal
+        key={selectedAsset?.id ?? 'none'}
+        asset={selectedAsset}
         onClose={() => setSelectedAsset(null)}
-        title="Detalhes do ativo"
-        subtitle={selectedAsset?.name}
-      >
-        {selectedAsset && (
-          <dl className="flex flex-col gap-4">
-            <div className="flex items-center justify-between gap-4 text-sm">
-              <dt className="font-medium text-text-muted">Código</dt>
-              <dd className="text-text">{selectedAsset.code}</dd>
-            </div>
-            <div className="flex items-center justify-between gap-4 text-sm">
-              <dt className="font-medium text-text-muted">Fornecedor</dt>
-              <dd className="text-text">{selectedAsset.supplier ?? '—'}</dd>
-            </div>
-            <div className="flex items-center justify-between gap-4 text-sm">
-              <dt className="font-medium text-text-muted">Unidade</dt>
-              <dd className="text-text">{selectedAsset.unit}</dd>
-            </div>
-            <div className="flex items-center justify-between gap-4 text-sm">
-              <dt className="font-medium text-text-muted">Criado em</dt>
-              <dd className="text-text">{formatDate(selectedAsset.createdAt)}</dd>
-            </div>
-            <div className="flex items-center justify-between gap-4 text-sm">
-              <dt className="font-medium text-text-muted">Atualizado em</dt>
-              <dd className="text-text">{formatDate(selectedAsset.updatedAt)}</dd>
-            </div>
-          </dl>
-        )}
-      </Modal>
+        onAssetUpdated={(updated) => {
+          setAssets((prev) => prev.map((asset) => (asset.id === updated.id ? updated : asset)))
+          setSelectedAsset(updated)
+        }}
+      />
     </AppLayout>
   )
 }

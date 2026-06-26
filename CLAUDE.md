@@ -75,15 +75,30 @@ Sidebar nav only lists routes that actually exist (`Início` → `/dashboard`, `
 
 `AuthContext` is split across three files (`AuthContext.ts`, `AuthProvider.tsx`, `useAuth.ts`) purely because `eslint-plugin-react-hooks`'s fast-refresh rule rejects a file that exports both a component and a hook. Don't recombine them.
 
+## Role-based access (`role` / `isAdmin`)
+
+`role` (`'USER' | 'ADMIN'`) follows the exact same dual-source pattern as `isVerified`: seeded synchronously from the JWT claim in `AuthProvider`, then kept in sync with `/me`'s `role` field whenever it loads. `isAdmin` is a derived boolean (`role === 'ADMIN'`) computed once in `AuthContext`'s value — read `isAdmin` from `useAuth()` at the call site rather than re-comparing `role === 'ADMIN'` inline.
+
+Admin-only actions (editing an asset, adding/deleting an indication) are gated **client-side for UX only** — the backend is the real authorization boundary (those endpoints reject non-admins regardless of what the UI shows). The pattern used in `Assets.tsx` / `AssetDetailModal.tsx`:
+- The row action that opens `AssetDetailModal` swaps icon + label based on `isAdmin` (`Pencil`/"Editar" vs `Eye`/"Ver detalhes") to set the right expectation before the modal even opens.
+- `AssetDetailModal` has no separate view/edit mode — it's one form whose fields all get `disabled={!isAdmin}`, and the footer swaps between Cancelar+Salvar (admin) and a single Fechar button (non-admin) so there's no submit path at all for non-admins.
+- The indications "Adicionar" input/button and each item's delete button are wrapped in `{isAdmin && (...)}` and don't render at all for non-admins — viewing the indications list itself stays available to everyone (`GET .../indications` has no role restriction).
+
 ## Service layering
 
 `src/api/client.ts` — base URL + endpoint URL constants (overridable via `VITE_*` env vars) and shared response/entity types. `src/api/httpClient.ts` — the one axios instance everything goes through. `src/services/*.ts` — one file per domain (`authService`, `tokenService`, `assetService`), each a thin set of functions over `httpClient`; no business logic in components or pages beyond calling these.
 
 When the backend returns a field that the OpenAPI/Swagger doc claims is always present but isn't (e.g. `Asset.supplier` can be `null` in practice), trust the runtime behavior over the doc — type it as nullable and render defensively (`'—'` fallback), don't assume the contract is accurate.
 
-**Don't assume every paginated endpoint shares one page shape.** `/v1/api/assets/search` nests pagination under `page: { size, number, totalElements, totalPages }` (type `Page<T>`), while `/v1/api/assets/favorites` returns those same four fields flat at the root (type `FlatPage<T>`, see `client.ts`). Check the actual response shape per-endpoint before reusing a pagination type.
+Contracts handed over for implementation have also been *incomplete*, not just imprecise about nullability — a later "expanded `AssetResponse`" contract omitted `supplier` entirely (it wasn't renamed to `manufacturer`, both fields are real and coexist) until an actual response body surfaced it. If a field disappears from a new contract that an existing feature already renders, don't assume it was intentionally removed — flag it and ask, rather than deleting the working column/field outright.
+
+**Don't assume every paginated endpoint shares one page shape.** `Page<T>` (search, indications) is flat — `{ content, totalElements, totalPages, size, number, first, last, empty }` at the root. `/v1/api/assets/favorites` returns a *different* flat shape missing `first`/`last`/`empty` (type `FlatPage<T>`, see `client.ts`) — it wasn't part of the contract update that introduced `Page<T>`'s current shape, so don't assume it picked up those three fields too. Check the actual response shape per-endpoint before reusing a pagination type; this has already changed once (search used to nest pagination under a `page: {...}` sub-object).
 
 401s reaching a feature's own `.catch()` are not "session expired" — `httpClient`'s interceptor already tried (and gave up on) refreshing the token before the error propagates that far, so a surviving 401 means something else (e.g. an unverified account). `src/lib/httpError.ts`'s `getErrorMessage()` encodes this and is the place to extend if new 401 sub-cases show up.
+
+**There is no "get asset by id" endpoint.** `AssetDetailModal` (`src/components/AssetDetailModal.tsx`) only ever receives an already-loaded `Asset` object as a prop from whatever list fetched it (`Assets.tsx`'s table) — it never fetches by id itself. This is why the asset detail/edit UI is a modal fed from in-memory list data rather than a routable `/assets/:id` page: a dedicated page would have no way to load its data on a fresh navigation or refresh. If a get-by-id endpoint is added later, revisit this.
+
+`AssetDetailModal` doubles as both the "view details" and "edit" UI — there's no separate read-only mode. It diffs its form state against the original `Asset` prop (`buildUpdatePayload`) and only sends fields that actually changed in the `PATCH`, per the backend's partial-update contract. After a successful save, it calls `onAssetUpdated(updated)` so the caller can patch its own list state in place — it does not refetch the list.
 
 ## Hooks gotchas (already hit these — don't reintroduce)
 

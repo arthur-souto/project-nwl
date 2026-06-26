@@ -108,7 +108,7 @@ export default function Profile() {
                     </div>
                     <p className="font-mono text-xs text-text-muted">{favorite.asset.code}</p>
                     <Badge variant="outline" className="self-start">
-                      {favorite.asset.unit}
+                      {favorite.asset.unit ?? '—'}
                     </Badge>
                   </Card>
                 ))

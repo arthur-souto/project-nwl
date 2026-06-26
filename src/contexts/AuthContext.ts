@@ -1,5 +1,5 @@
 import { createContext } from 'react'
-import type { CurrentUser } from '../api/client'
+import type { CurrentUser, UserRole } from '../api/client'
 
 export interface AuthContextValue {
   user: CurrentUser | null
@@ -8,6 +8,8 @@ export interface AuthContextValue {
   clearUser: () => void
   isVerified: boolean
   markVerified: () => void
+  role: UserRole | null
+  isAdmin: boolean
 }
 
 export const AuthContext = createContext<AuthContextValue | undefined>(undefined)
