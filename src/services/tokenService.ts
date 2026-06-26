@@ -1,5 +1,5 @@
 import { jwtDecode } from 'jwt-decode'
-import type { ExchangeResponse } from '../api/client'
+import type { ExchangeResponse, UserRole } from '../api/client'
 
 const ACCESS_TOKEN_KEY = 'accessToken'
 const REFRESH_TOKEN_KEY = 'refreshToken'
@@ -9,6 +9,7 @@ export interface JwtPayload {
   email: string
   username: string
   isVerified: boolean
+  role: UserRole
 }
 
 export function getAccessToken(): string | null {

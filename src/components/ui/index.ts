@@ -20,7 +20,7 @@ export { MetricCard } from './MetricCard'
 export type { MetricCardProps } from './MetricCard'
 
 export { Modal } from './Modal'
-export type { ModalProps } from './Modal'
+export type { ModalProps, ModalSize } from './Modal'
 
 export { ToastViewport } from './Toast'
 
@@ -36,3 +36,6 @@ export { Skeleton } from './Skeleton'
 
 export { Spinner } from './Spinner'
 export type { SpinnerProps } from './Spinner'
+
+export { Textarea } from './Textarea'
+export type { TextareaProps } from './Textarea'

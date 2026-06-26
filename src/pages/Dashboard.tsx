@@ -21,7 +21,7 @@ export default function Dashboard() {
 
     searchAssets('', { page: 0, size: 1 }).then((result) => {
       if (cancelled) return
-      setTotalAssets(result.page.totalElements)
+      setTotalAssets(result.totalElements)
     })
 
     return () => {
