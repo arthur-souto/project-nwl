@@ -2,6 +2,7 @@ import { Menu } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import type { CurrentUser } from '../../api/client'
 import { Badge } from '../ui/Badge'
+import { ThemeToggle } from '../ui/ThemeToggle'
 
 export interface TopbarProps {
   title: string
@@ -12,7 +13,7 @@ export interface TopbarProps {
 
 export function Topbar({ title, isVerified, user, onMenuClick }: TopbarProps) {
   return (
-    <header className="sticky top-0 z-20 flex h-12 items-center gap-3 border-b border-border bg-white px-4">
+    <header className="sticky top-0 z-20 flex h-12 items-center gap-3 border-b border-border bg-surface px-4">
       <button
         type="button"
         onClick={onMenuClick}
@@ -25,6 +26,7 @@ export function Topbar({ title, isVerified, user, onMenuClick }: TopbarProps) {
       <h1 className="text-sm font-medium text-text">{title}</h1>
 
       <div className="ml-auto flex items-center gap-3">
+        <ThemeToggle />
         <Badge variant={isVerified ? 'success' : 'warning'}>{isVerified ? 'Verificado' : 'Pendente'}</Badge>
 
         {user && (

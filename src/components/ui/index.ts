@@ -39,3 +39,6 @@ export type { SpinnerProps } from './Spinner'
 
 export { Textarea } from './Textarea'
 export type { TextareaProps } from './Textarea'
+
+export { ThemeToggle } from './ThemeToggle'
+export type { ThemeToggleProps } from './ThemeToggle'

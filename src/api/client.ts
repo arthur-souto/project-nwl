@@ -48,11 +48,16 @@ export interface Asset {
   composition: string | null
   dosage: string | null
   mechanism: string | null
-  associations: string | null
   pharmaForms: string | null
   literatureUrl: string | null
   category: string | null
   isExclusive: boolean
+  concentrationMin: number | null
+  concentrationMax: number | null
+  concentrationUsual: number | null
+  concentrationUnit: string | null
+  concentrationSource: string | null
+  concentrationPharmaForm: string | null
   createdAt: string
   updatedAt: string
 }
@@ -65,11 +70,29 @@ export interface AssetUpdateRequest {
   composition?: string
   dosage?: string
   mechanism?: string
-  associations?: string
   pharmaForms?: string
   literatureUrl?: string
   category?: string
   isExclusive?: boolean
+  concentrationMin?: number
+  concentrationMax?: number
+  concentrationUsual?: number
+  concentrationUnit?: string
+  concentrationSource?: string
+  concentrationPharmaForm?: string
+}
+
+export type ConcentrationCheckStatus = 'WITHIN_RANGE' | 'BELOW_MIN' | 'ABOVE_MAX' | 'NO_DATA'
+
+export interface ConcentrationCheckResponse {
+  value: number
+  status: ConcentrationCheckStatus
+  concentrationMin: number | null
+  concentrationMax: number | null
+  concentrationUsual: number | null
+  concentrationUnit: string | null
+  concentrationSource: string | null
+  concentrationPharmaForm: string | null
 }
 
 export interface AssetIndication {
@@ -81,6 +104,17 @@ export interface AssetIndication {
 
 export interface AssetIndicationRequest {
   indication: string
+}
+
+export interface AssetAssociation {
+  id: string
+  assetId: string
+  association: string
+  createdAt: string
+}
+
+export interface AssetAssociationRequest {
+  association: string
 }
 
 export interface PageableParams {

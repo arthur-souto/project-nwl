@@ -30,7 +30,7 @@ export function DataTable<T>({
     <div className="overflow-x-auto">
       <table className="w-full text-left">
         <thead>
-          <tr className="border-b border-border bg-[#f9fafb] text-text-muted">
+          <tr className="border-b border-border bg-background text-text-muted">
             {columns.map((column) => (
               <th key={column.key} scope="col" className="px-4 py-2 text-[11px] font-medium uppercase tracking-wide">
                 {column.header}
@@ -41,7 +41,7 @@ export function DataTable<T>({
         <tbody>
           {isLoading ? (
             Array.from({ length: skeletonRows }).map((_, rowIndex) => (
-              <tr key={rowIndex} className="border-b border-[#f3f4f6] last:border-0">
+              <tr key={rowIndex} className="border-b border-border-subtle last:border-0">
                 {columns.map((column) => (
                   <td key={column.key} className="px-4 py-2">
                     <Skeleton className="h-4 w-full max-w-[160px]" />
@@ -59,7 +59,7 @@ export function DataTable<T>({
             data.map((row) => (
               <tr
                 key={rowKey(row)}
-                className="border-b border-[#f3f4f6] transition-colors last:border-0 hover:bg-[#fafafa]"
+                className="border-b border-border-subtle transition-colors last:border-0 hover:bg-background"
               >
                 {columns.map((column) => (
                   <td key={column.key} className={cn('px-4 py-2', column.className)}>

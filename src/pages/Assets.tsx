@@ -41,6 +41,22 @@ function formatDate(value: string): string {
   return new Date(value).toLocaleDateString('pt-BR')
 }
 
+function formatConcentrationCell(asset: Asset): string {
+  const { concentrationMin, concentrationMax, concentrationUsual, concentrationUnit } = asset
+  if (concentrationMin == null && concentrationMax == null && concentrationUsual == null) {
+    return '—'
+  }
+
+  const unit = concentrationUnit ?? ''
+  if (concentrationMin != null && concentrationMax != null) {
+    return `${concentrationMin}–${concentrationMax}${unit}`
+  }
+  if (concentrationUsual != null) {
+    return `${concentrationUsual}${unit}`
+  }
+  return `${concentrationMin ?? concentrationMax}${unit}`
+}
+
 function exportToCsv(assets: Asset[]) {
   const header = ['Código', 'Nome', 'Fornecedor', 'Fabricante', 'Unidade']
   const rows = assets.map((asset) => [
@@ -286,6 +302,21 @@ export default function Assets() {
       render: (asset) => <Badge variant="outline">{asset.unit ?? '—'}</Badge>,
     },
     {
+      key: 'concentration',
+      header: 'Concentração',
+      render: (asset) => {
+        const value = formatConcentrationCell(asset)
+        return (
+          <div className="flex flex-col">
+            <span className="text-xs text-text-muted">{value}</span>
+            {value !== '—' && asset.concentrationPharmaForm && (
+              <span className="text-[11px] text-text-muted">{asset.concentrationPharmaForm}</span>
+            )}
+          </div>
+        )
+      },
+    },
+    {
       key: 'actions',
       header: '',
       className: 'text-right',
@@ -343,7 +374,7 @@ export default function Assets() {
         </div>
 
         <div className="flex items-center gap-3">
-          <div className="inline-flex rounded-md border border-border bg-white p-0.5">
+          <div className="inline-flex rounded-md border border-border bg-surface p-0.5">
             <button
               type="button"
               onClick={() => handleViewChange('all')}
@@ -384,7 +415,7 @@ export default function Assets() {
       {view === 'all' && (
         <div className="mt-4 flex flex-wrap items-end justify-between gap-3">
           <Input
-            placeholder="Buscar por nome, fornecedor, fabricante, categoria ou indicação"
+            placeholder="Buscar por nome, fornecedor, fabricante, categoria, indicação ou associação"
             value={searchTerm}
             onChange={handleSearchChange}
             className="max-w-sm flex-1"

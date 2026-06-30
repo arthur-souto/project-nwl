@@ -15,8 +15,8 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const variantClasses: Record<ButtonVariant, string> = {
-  primary: 'bg-primary text-text hover:brightness-95 active:brightness-90 shadow-sm',
-  secondary: 'bg-white text-text border border-border hover:bg-background',
+  primary: 'bg-primary text-on-primary hover:brightness-95 active:brightness-90 shadow-sm',
+  secondary: 'bg-surface text-text border border-border hover:bg-background',
   ghost: 'bg-transparent text-primary-dark hover:bg-background',
 }
 
@@ -53,7 +53,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
       {...props}
     >
       {loading ? (
-        <Spinner size="sm" className={variant === 'primary' ? 'border-text/30 border-t-text' : undefined} />
+        <Spinner size="sm" className={variant === 'primary' ? 'border-on-primary/30 border-t-on-primary' : undefined} />
       ) : (
         icon && iconPosition === 'left' && icon
       )}
