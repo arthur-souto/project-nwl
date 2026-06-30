@@ -88,14 +88,14 @@ export interface SidebarProps {
 export function Sidebar({ user, onLogout, open, onClose }: SidebarProps) {
   return (
     <>
-      <aside className="fixed inset-y-0 left-0 z-30 hidden w-55 flex-col border-r border-border bg-white md:flex">
+      <aside className="fixed inset-y-0 left-0 z-30 hidden w-55 flex-col border-r border-border bg-surface md:flex">
         <SidebarContent user={user} onLogout={onLogout} />
       </aside>
 
       {open && (
         <div className="fixed inset-0 z-40 md:hidden">
           <div aria-hidden="true" className="absolute inset-0 bg-black/50" onClick={onClose} />
-          <aside className="absolute inset-y-0 left-0 w-55 bg-white shadow-lg">
+          <aside className="absolute inset-y-0 left-0 w-55 bg-surface shadow-lg">
             <SidebarContent user={user} onLogout={onLogout} />
           </aside>
         </div>

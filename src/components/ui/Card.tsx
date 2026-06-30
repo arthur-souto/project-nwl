@@ -17,7 +17,7 @@ const variantClasses: Record<CardVariant, string> = {
 export function Card({ variant = 'default', padded = true, className, children, ...props }: CardProps) {
   return (
     <div
-      className={cn('rounded-md border border-border bg-white', variantClasses[variant], padded && 'p-6', className)}
+      className={cn('rounded-md border border-border bg-surface', variantClasses[variant], padded && 'p-6', className)}
       {...props}
     >
       {children}

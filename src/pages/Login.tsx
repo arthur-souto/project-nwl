@@ -2,6 +2,7 @@ import { GOOGLE_AUTH_URL } from '../api/client'
 import { Button } from '../components/ui/Button'
 import { Card } from '../components/ui/Card'
 import { LogoMark } from '../components/ui/LogoMark'
+import { ThemeToggle } from '../components/ui/ThemeToggle'
 
 function GoogleIcon() {
   return (
@@ -103,7 +104,9 @@ export default function Login() {
         </p>
       </section>
 
-      <section className="flex flex-1 flex-col items-center justify-center bg-background px-6 py-16 sm:px-12">
+      <section className="relative flex flex-1 flex-col items-center justify-center bg-background px-6 py-16 sm:px-12">
+        <ThemeToggle className="absolute right-4 top-4" />
+
         <Card variant="elevated" className="w-full max-w-sm">
           <h2 className="text-2xl font-bold text-text">Acesse sua conta</h2>
           <p className="mt-2 text-sm text-text-muted">Entre com sua conta Google para continuar</p>

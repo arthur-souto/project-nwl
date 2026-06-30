@@ -13,7 +13,10 @@ export default {
         surface: 'var(--color-surface)',
         text: 'var(--color-text)',
         'text-muted': 'var(--color-text-muted)',
+        'on-primary': 'var(--color-on-primary)',
         border: 'var(--color-border)',
+        'border-subtle': 'var(--color-border-subtle)',
+        skeleton: 'var(--color-skeleton)',
         success: {
           DEFAULT: 'var(--color-success)',
           light: 'var(--color-success-light)',

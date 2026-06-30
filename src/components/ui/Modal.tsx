@@ -42,7 +42,7 @@ export function Modal({
       onClick={closeOnOverlayClick ? onClose : undefined}
     >
       <div
-        className={cn('max-h-[85vh] w-full overflow-y-auto rounded-md bg-white p-8 shadow-lg', sizeClasses[size], className)}
+        className={cn('max-h-[85vh] w-full overflow-y-auto rounded-md bg-surface p-8 shadow-lg', sizeClasses[size], className)}
         onClick={(event) => event.stopPropagation()}
       >
         <h2 id="modal-title" className="text-xl font-semibold text-text">

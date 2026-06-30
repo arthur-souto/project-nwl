@@ -3,6 +3,9 @@
   --color-primary: #16a34a;
   --color-primary-dark: #15803d;
   --color-primary-light: #f0faf0;
+  /* Fixed — text/icons on top of a --color-primary background. Doesn't invert in dark
+     mode: the button background itself doesn't change, so the contrasting text shouldn't either. */
+  --color-on-primary: #0f172a;
 
   /* Neutrals */
   --color-background: #f8f9f8;
@@ -10,6 +13,10 @@
   --color-text: #1a2e1a;
   --color-text-muted: #6b7280;
   --color-border: #e5e7eb;
+  /* Lighter than --color-border — used for dense table row dividers only. */
+  --color-border-subtle: #f3f4f6;
+  /* Loading-skeleton fill. */
+  --color-skeleton: #f3f4f6;
 
   /* Status */
   --color-success: #15803d;
@@ -43,4 +50,36 @@
   --spacing-32: 32px;
   --spacing-48: 48px;
   --spacing-64: 64px;
+}
+
+/* Dark mode — applied to <html> by ThemeProvider. Only the tokens that need to invert are
+   redeclared here; everything else (radius, shadow shape, spacing, --color-on-primary) is
+   shared with :root on purpose. */
+.dark {
+  --color-primary: #22c55e;
+  /* Brighter than light mode's --color-primary-dark — this token is used as *text* on top
+     of the page background, so in dark mode it needs to be light enough to read, not dark. */
+  --color-primary-dark: #4ade80;
+  --color-primary-light: #14291c;
+
+  --color-background: #0d1410;
+  --color-surface: #161d18;
+  --color-text: #e8ede8;
+  --color-text-muted: #8a9a8c;
+  --color-border: #2a332b;
+  --color-border-subtle: #20281f;
+  --color-skeleton: #232c24;
+
+  --color-success: #4ade80;
+  --color-success-light: #14291c;
+  --color-warning: #fbbf24;
+  --color-warning-light: #2e2410;
+  --color-error: #f87171;
+  --color-error-light: #2e1717;
+  --color-info: #60a5fa;
+  --color-info-light: #15233a;
+
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 2px 6px -1px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 6px 16px -4px rgba(0, 0, 0, 0.6);
 }
